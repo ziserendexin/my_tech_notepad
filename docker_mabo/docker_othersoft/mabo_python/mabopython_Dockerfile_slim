@@ -1,0 +1,6 @@
+FROM python:3.7.0-slim
+WORKDIR /usr/mabo/
+COPY ./mabopython_requirements.txt ./
+RUN pip install -r mabopython_requirements.txt \
+	&& rm mabopython_requirements.txt
+

@@ -1,0 +1,5 @@
+1、UEFI启动模式下安装Ubuntu 16.04教程
+https://blog.csdn.net/jesse_mx/article/details/61425361
+2、怎样装 Windows 10 系统？
+https://www.zhihu.com/question/39207359
+3、写完系统后，请不要热插拔u盘

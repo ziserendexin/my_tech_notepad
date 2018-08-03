@@ -1,0 +1,19 @@
+version: '3.6'
+services:
+  registry:
+    image: "registry:2.6.2"
+    ports: 
+      - 10051:5000 
+#      - 5001:5001
+    container_name: "registry"
+    restart: always
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    volumes: 
+      - /usr/mabo/docker_server/conf/config.yml:/etc/docker/registry/config.yml
+      - /usr/mabo/docker_server/registry:/data
+
+
+       
+        
+

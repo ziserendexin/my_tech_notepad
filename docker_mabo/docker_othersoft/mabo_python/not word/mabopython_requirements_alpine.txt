@@ -1,0 +1,17 @@
+zope.interface
+constantly
+incremental
+attrs
+Automat
+twisted
+pymodbus3
+pendulum
+redis
+influxdb
+msgpack-python
+toml
+python-etcd
+falcon
+waitress
+gevent
+logbook

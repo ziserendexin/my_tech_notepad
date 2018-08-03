@@ -1,0 +1,7 @@
+原因为，window下，自动加了/r，但这个在Linux中无法识别，容易造成目录失效。
+参考：
+https://unix.stackexchange.com/questions/27054/bin-bash-no-such-file-or-directory
+解决方案：
+一、手动干掉\r 
+二、使用dos2unix - 将DOS格式文本文件转换成UNIX格式
+参考：http://codingstandards.iteye.com/blog/810900
