@@ -6,7 +6,15 @@
 
 阅读指南
 
-1、2需要了解，3，为扩展知识，4....你看心情吧。。。虽然我是写了，但都不代表我看懂了。但可以使用‘乘法来类比’，这个来作为类比概念性理解。
+1、2需要了解，
+
+3，为扩展知识，
+
+4....你看心情吧。。。虽然我是写了，但都不代表我看懂了。但可以使用‘乘法来类比’，这个来作为类比概念性理解。
+
+5,6,是一些资料。
+
+7，就是个实践性的操作，这里以实际所用的influxdb作为方式。
 
 ------
 
@@ -217,37 +225,37 @@
 
 
 
-  安全性：
-
-  	当获取到了(N,e),及加密消息Y,的时候，是无法直接获得d的，
-
-  	要获得 d，最简单的方法是将 N 分解为 p和p，这样她可以得到[同余方程](https://zh.wikipedia.org/wiki/%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99%E6%96%B9%E7%A8%8B)：
-$$
-{\displaystyle de=1(\mathrm {mod} (p-1)(q-1))}并解出{\displaystyle d}，然后代入解密公式。
-$$
-​	并解出d，然后代入解密公式。
-
-  	导出*n*（破密）。但至今为止还没有人找到一个多项式时间的算法来分解一个大的整数的因子，同时也还没有人能够证明这种算法不存在（见[因数分解](https://zh.wikipedia.org/wiki/%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3)）。
-
-  	至今为止也没有人能够证明对N进行因数分解是唯一的从c导出N的方法，但今天还没有找到比它更简单的方法。（至少没有公开的方法。）
-
-  当然，此处也应该指出，如果p、q被舍弃掉的情况下，是无法从私钥推导出公钥。
-
-  > https://blog.csdn.net/caomiao2006/article/details/7470637
-  >
-  >  [阮一峰](http://www.ruanyifeng.com/)：http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html
-
-  扩展**欧拉定理**：
-$$
-  \begin{align*}
-  &在数论中，欧拉定理（也称费马-欧拉定理或欧拉 {\displaystyle {\varphi }} 函数定理）是一个关于同余的性质。 \\
-  &欧拉定理表明，若 {\displaystyle n,a} 为正整数，且 {\displaystyle N,a}互素（即 {\displaystyle \gcd(N,a)=1} )，则 \\
-  \end{align*}
-  \\ {\displaystyle a^{\varphi (N)}\equiv 1{\pmod {N}}} 
-  \\
-  \ \ \ 即 {\displaystyle a^{\varphi (N)}}与1在模n下同余；φ(n)为欧拉函数。\\
-  \ \ \ 本例子中，φ(N)为(p-1)(q-1)
-$$
+        安全性：
+    
+        	当获取到了(N,e),及加密消息Y,的时候，是无法直接获得d的，
+    
+        	要获得 d，最简单的方法是将 N 分解为 p和p，这样她可以得到[同余方程](https://zh.wikipedia.org/wiki/%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99%E6%96%B9%E7%A8%8B)：
+      $$
+      {\displaystyle de=1(\mathrm {mod} (p-1)(q-1))}并解出{\displaystyle d}，然后代入解密公式。
+      $$
+      ​	并解出d，然后代入解密公式。
+    
+        	导出*n*（破密）。但至今为止还没有人找到一个多项式时间的算法来分解一个大的整数的因子，同时也还没有人能够证明这种算法不存在（见[因数分解](https://zh.wikipedia.org/wiki/%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3)）。
+    
+        	至今为止也没有人能够证明对N进行因数分解是唯一的从c导出N的方法，但今天还没有找到比它更简单的方法。（至少没有公开的方法。）
+    
+        当然，此处也应该指出，如果p、q被舍弃掉的情况下，是无法从私钥推导出公钥。
+    
+      > https://blog.csdn.net/caomiao2006/article/details/7470637
+      >
+      > >   [阮一峰](http://www.ruanyifeng.com/)：http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html
+    
+        扩展**欧拉定理**：
+      $$
+        \begin{align*}
+        &在数论中，欧拉定理（也称费马-欧拉定理或欧拉 {\displaystyle {\varphi }} 函数定理）是一个关于同余的性质。 \\
+        &欧拉定理表明，若 {\displaystyle n,a} 为正整数，且 {\displaystyle N,a}互素（即 {\displaystyle \gcd(N,a)=1} )，则 \\
+        \end{align*}
+        \\ {\displaystyle a^{\varphi (N)}\equiv 1{\pmod {N}}} 
+        \\
+        \ \ \ 即 {\displaystyle a^{\varphi (N)}}与1在模n下同余；φ(n)为欧拉函数。\\
+        \ \ \ 本例子中，φ(N)为(p-1)(q-1)
+      $$
 
    2. 椭圆曲线密码学(ECC)
 
@@ -259,13 +267,13 @@ $$
 
       .......????????????????????????????
 
-5. #### SSL(TSL)&OpenSSL
+3. #### SSL(TSL)&OpenSSL
 
    **传输层安全性协议**（英语：Transport Layer Security，[缩写](https://zh.wikipedia.org/wiki/%E7%B8%AE%E5%AF%AB)作 **TLS**），及其前身**安全套接层**（Secure Sockets Layer，缩写作 **SSL**）是一种[安全协议](https://zh.wikipedia.org/wiki/%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE)，目的是为[互联网](https://zh.wikipedia.org/wiki/%E7%B6%B2%E9%9A%9B%E7%B6%B2%E8%B7%AF)通信提供安全及数据[完整性](https://zh.wikipedia.org/wiki/%E5%AE%8C%E6%95%B4%E6%80%A7)保障。
 
    **OpenSSL** - 简单地说,OpenSSL是SSL的一个实现,SSL只是一种规范.理论上来说,SSL这种规范是安全的,目前的技术水平很难破解,但SSL的实现就可能有些漏洞,如著名的"心脏出血".OpenSSL还提供了一大堆强大的工具软件,强大到90%我们都用不到.
 
-6. #### 数字证书格式
+4. #### 数字证书格式
 
    > https://zh.wikipedia.org/wiki/X.509
 
@@ -276,3 +284,51 @@ $$
    - `.p7b`, `.p7c` – [PKCS#7](https://zh.wikipedia.org/wiki/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E6%A0%87%E5%87%86) SignedData structure without data, just certificate(s) or [CRL](https://zh.wikipedia.org/wiki/%E8%AF%81%E4%B9%A6%E5%90%8A%E9%94%80%E5%88%97%E8%A1%A8)(s)
    - `.p12` – [PKCS#12](https://zh.wikipedia.org/wiki/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E6%A0%87%E5%87%86)制式，包含证书的同时可能还有带密码保护的私钥
    - `.pfx` – PFX，PKCS#12之前的制式（通常用PKCS#12制式，比如那些由[IIS](https://zh.wikipedia.org/wiki/IIS)产生的PFX文件）
+
+5. #### influxDB开启https
+
+   > https://docs.influxdata.com/influxdb/v1.6/administration/https_setup/
+
+   1. 生成自签名证书
+
+      ```
+      # sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /usr/mabo/ssl_key/ssl_keyinfluxdb-selfsigned.key -out /usr/mabo/ssl_key/influxdb-selfsigned.crt -days 3650
+      
+      sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/ssl/influxdb-selfsigned.key -out /etc/ssl/influxdb-selfsigned.crt -days <NUMBER_OF_DAYS>
+      ```
+
+   2. 重检TLS配置
+
+   3. 开启ssl配置
+
+      ```
+      https-enabled to true
+      https-certificate to /etc/ssl/influxdb-selfsigned.crt
+      https-private-key to /etc/ssl/influxdb-selfsigned.key
+      ```
+
+   4. 重启influxdb
+
+   5. 通过命令行验证ssl是否正常工作
+
+   6. 注意修改telegraf为https模式
+
+      **试验失败。。。不行不行，这样做需要配置的东西太多了。不行不行。还是使用Nginx的代理来做ssl**
+
+6. #### 代理服务
+
+   还有种方式是把Nginx放在这些应用前面，实现方向代理。这样做的好处是，只需要配置一个代理即可。个人比较喜欢这个，但还是出两个版本吧。
+
+7. #### **docker secret**
+
+   > https://blog.csdn.net/dkfajsldfsdfsd/article/details/79961552
+   >
+   > https://www.ibm.com/developerworks/community/blogs/132cfa78-44b0-4376-85d0-d3096cd30d3f/entry/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8_Secret_%E6%AF%8F%E5%A4%A95%E5%88%86%E9%92%9F%E7%8E%A9%E8%BD%AC_Docker_%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF_108?lang=en
+
+   对于docker来说，适合把所有的加密信息给保存至secret中。
+
+   但这个只适用于docker swarm集群中。单机貌似不行，所以此处跳过。
+
+   当然，k8s也有secret。所以参考下面k8s的说明：
+
+   > https://kubernetes.io/docs/concepts/configuration/secret/
