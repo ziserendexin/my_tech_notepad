@@ -221,30 +221,27 @@
       \end{align*}
       $$
 
+      安全性：
 
-
-
-
-        安全性：
-    
         	当获取到了(N,e),及加密消息Y,的时候，是无法直接获得d的，
-    
+
         	要获得 d，最简单的方法是将 N 分解为 p和p，这样她可以得到[同余方程](https://zh.wikipedia.org/wiki/%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99%E6%96%B9%E7%A8%8B)：
+      ​    
       $$
       {\displaystyle de=1(\mathrm {mod} (p-1)(q-1))}并解出{\displaystyle d}，然后代入解密公式。
       $$
       ​	并解出d，然后代入解密公式。
-    
+
         	导出*n*（破密）。但至今为止还没有人找到一个多项式时间的算法来分解一个大的整数的因子，同时也还没有人能够证明这种算法不存在（见[因数分解](https://zh.wikipedia.org/wiki/%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3)）。
-    
+
         	至今为止也没有人能够证明对N进行因数分解是唯一的从c导出N的方法，但今天还没有找到比它更简单的方法。（至少没有公开的方法。）
-    
+
         当然，此处也应该指出，如果p、q被舍弃掉的情况下，是无法从私钥推导出公钥。
-    
+
       > https://blog.csdn.net/caomiao2006/article/details/7470637
       >
       > >   [阮一峰](http://www.ruanyifeng.com/)：http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html
-    
+
         扩展**欧拉定理**：
       $$
         \begin{align*}
@@ -267,13 +264,13 @@
 
       .......????????????????????????????
 
-3. #### SSL(TSL)&OpenSSL
+5. #### SSL(TSL)&OpenSSL
 
    **传输层安全性协议**（英语：Transport Layer Security，[缩写](https://zh.wikipedia.org/wiki/%E7%B8%AE%E5%AF%AB)作 **TLS**），及其前身**安全套接层**（Secure Sockets Layer，缩写作 **SSL**）是一种[安全协议](https://zh.wikipedia.org/wiki/%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE)，目的是为[互联网](https://zh.wikipedia.org/wiki/%E7%B6%B2%E9%9A%9B%E7%B6%B2%E8%B7%AF)通信提供安全及数据[完整性](https://zh.wikipedia.org/wiki/%E5%AE%8C%E6%95%B4%E6%80%A7)保障。
 
    **OpenSSL** - 简单地说,OpenSSL是SSL的一个实现,SSL只是一种规范.理论上来说,SSL这种规范是安全的,目前的技术水平很难破解,但SSL的实现就可能有些漏洞,如著名的"心脏出血".OpenSSL还提供了一大堆强大的工具软件,强大到90%我们都用不到.
 
-4. #### 数字证书格式
+6. #### 数字证书格式
 
    > https://zh.wikipedia.org/wiki/X.509
 
@@ -285,7 +282,7 @@
    - `.p12` – [PKCS#12](https://zh.wikipedia.org/wiki/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E6%A0%87%E5%87%86)制式，包含证书的同时可能还有带密码保护的私钥
    - `.pfx` – PFX，PKCS#12之前的制式（通常用PKCS#12制式，比如那些由[IIS](https://zh.wikipedia.org/wiki/IIS)产生的PFX文件）
 
-5. #### influxDB开启https
+7. #### influxDB开启https
 
    > https://docs.influxdata.com/influxdb/v1.6/administration/https_setup/
 
@@ -315,11 +312,185 @@
 
       **试验失败。。。不行不行，这样做需要配置的东西太多了。不行不行。还是使用Nginx的代理来做ssl**
 
-6. #### 代理服务
+8. #### 代理服务
 
    还有种方式是把Nginx放在这些应用前面，实现方向代理。这样做的好处是，只需要配置一个代理即可。个人比较喜欢这个，但还是出两个版本吧。
 
-7. #### **docker secret**
+   1. base
+
+      首先需要了解nginx的配置说明。
+
+      其配置文件名为nginx.conf，位置不一定一样，但在docker内部，其配置文件文件位于`/etc/nginx/conf.d/default.conf`。
+
+      官方docker中的方式，是使用`envsubst`将个性化配置加入到`default.conf`中。优劣。。。仁者见仁智者见智吧。
+
+   2. 负载均衡
+
+      需要使用upstream，上有服务器，设置，将其放于http块中。参考应用：
+
+      https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/#proxying-http-traffic-to-a-group-of-servers
+
+      例如，以下配置定义了一个名为**backend**的组，它由三个服务器配置组成（可以在三个以上的实际服务器中解析）：
+
+      ```
+      http {
+          upstream backend {
+              server backend1.example.com;
+              server backend2.example.com;
+              server 192.0.0.1 backup;
+          }
+          
+          server {
+              location / {
+                  proxy_pass http://backend;
+              }
+          }
+      }
+      ```
+
+       默认使用Round Robin算法进行负载均衡。
+
+      同时，可以如下所示，给server设置权重，权重高德更容易被选中。
+
+      ```
+      upstream backend {
+          server backend1.example.com weight=5;
+          server backend2.example.com;
+          server 192.0.0.1 backup;
+      }
+      ```
+
+      值得注意的是，有以下功能。后续如需配置，可以参考：
+
+      - 慢启动：恢复可用后，逐渐增加权重
+      - 持久会话：可以按照cookie、路由、学习的方式，建立持久性会话。
+      - 限制连接数
+      - 连接健康检查：可以设置失败次数，重试时间间隔。
+      - 活跃健康检查
+
+   3. 响应缓存
+
+      NGINX Plus会将响应保存在磁盘缓存中，并使用它们响应客户端，而无需每次都代理对相同内容的请求。
+
+   4. 网络服务
+
+      1. web服务器
+
+         可以使用Nginx做一些简单的重定向之类的操作。
+
+      2. 静态网页内容
+
+      3. 反向代理
+
+         通过不同协议，将请求从Nginx传递到代理服务器。
+
+         当然还能设置缓存与传出ip。
+
+      4. 压缩gzip
+
+      5. 【重点来了】安全控制
+
+         1. https
+
+            设置https的时候，在配置文件中的server包换ssl参数。
+
+            ```
+            worker_processes auto;
+            
+            http {
+                ssl_session_cache   shared:SSL:10m;
+                ssl_session_timeout 10m;
+            
+                server {
+                    listen              443 ssl;
+                    server_name         www.example.com;
+                    keepalive_timeout   70;
+            
+                    ssl_certificate     www.example.com.crt;
+                    ssl_certificate_key www.example.com.key;
+                    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+                    ssl_ciphers         HIGH:!aNULL:!MD5;
+                    #...
+                }
+            }
+            ```
+
+         2. 对上游服务而言的ssl 终止
+
+            SSL终止意味着NGINX Plus充当与客户端连接的服务器端SSL端点：它执行请求的解密和后端服务器本来必须执行的响应的加密。该操作称为终止，因为NGINX Plus关闭客户端连接，并通过新创建的未加密连接将客户端数据转发到上游组中的服务器。在R6及更高版本中，NGINX Plus为TCP连接和HTTP连接执行SSL终止。【这就是我想要的】
+
+            完整的例子：
+
+            ```
+            stream {
+                upstream stream_backend {
+                     server backend1.example.com:12345;
+                     server backend2.example.com:12345;
+                     server backend3.example.com:12345;
+                }
+            
+                server {
+                    listen                12345 ssl;
+                    proxy_pass            stream_backend;
+            
+                    ssl_certificate       /etc/ssl/certs/server.crt;
+                    ssl_certificate_key   /etc/ssl/certs/server.key;
+                    ssl_protocols         SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+                    ssl_ciphers           HIGH:!aNULL:!MD5;
+                    ssl_session_cache     shared:SSL:20m;
+                    ssl_session_timeout   4h;
+                    ssl_handshake_timeout 30s;
+                    #...
+                 }
+            }
+            ```
+
+            在此示例中，`server`块中的指令指示NGINX Plus终止并解密来自客户端的安全TCP流量，并将其未加密传递到`stream_backend`由三个服务器组成的上游组。
+
+         3. 基于http身份的访问限制
+
+            > https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/
+
+         4. 访问限制
+
+            比如禁止一些ip地址，禁止一些端口之类的操作。
+
+      6. 监控方式——仪表盘及配置简单的api工具等
+
+         > https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/
+
+      7. 高可用
+
+         。。。去死吧，看不懂。感觉不如直接上k8s。。。
+
+   5. docker之Nginx配置
+
+      貌似不能直接使用其配置了，这样需要直接使用覆盖配置文件的方式来做了。
+
+
+
+   > > http://seanlook.com/2015/05/17/nginx-install-and-config/
+   >
+   > > Nginx配置文件主要分成四部分：main（全局设置）、server（主机设置）、upstream（上游服务器设置，主要为反向代理、负载均衡相关配置）和 location（URL匹配特定位置后的设置），每部分包含若干个指令。main部分设置的指令将影响其它所有部分的设置；server部分的指令主要用于指定虚拟主机域名、IP和端口；upstream的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡；location部分用于匹配网页位置（比如，根目录“/”,“/images”,等等）。他们之间的关系式：server继承main，location继承server；upstream既不会继承指令也不会被继承。它有自己的特殊指令，不需要在其他地方的应用。
+   >
+   > 1. 结构组成
+   >
+   >    > https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/
+   >
+   >    配置文件由指令和参数组成，指令以分号皆为。将指令组合在一起，括在花括号中，这个称为块。
+   >
+   >    为了便于维护，可以将部分存储于特定目录中。
+   >
+   >    观察官方配置文件。见文件夹[nginx.conf](./example_conf/nginx/nginx.conf)。可以看到这个配置文件包含了两种配置文件，一个是`/etc/nginx/mime.types`另一个是`/etc/nginx/conf.d/*.conf`,
+   >
+   > 2. main部分
+   >
+   >    woker_xxx
+   >
+   >    这部分配置cpu消耗部分的设置，需要根据cpu进行配置。影响最大链接、转发性能等问题。
+   >
+
+9. #### **docker secret**
 
    > https://blog.csdn.net/dkfajsldfsdfsd/article/details/79961552
    >
