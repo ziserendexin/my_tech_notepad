@@ -1,0 +1,3 @@
+[submodule "docker_mabo"]
+	path = docker_mabo
+	url = https://github.com/Mabo-IoT/docker_mabo
