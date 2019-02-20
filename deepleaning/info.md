@@ -454,3 +454,73 @@ $$
 
 这里使用了最大似然估计？
 
+## python basics with numpy
+
+1. np的指数函数：
+
+   ```
+   s = 1/(1+np.exp(-x))
+   ```
+
+2. 对sigmoid(z)的求导：
+   $$
+   \sigma'(x) = s(1-s)
+   $$
+   所以可以写为：
+
+   ```
+   s = sigmoid(x)
+   ds = s*(1-s)
+   ```
+
+3. 对于np.array的重构
+
+   将一个(a,b,c)维度的矩阵v，变为(a*b,c)的矩阵。
+
+   ```python
+   v = v.reshape((v.shape[0]*v.shape[1], v.shape[2])) # v.shape[0] = a ; v.shape[1] = b ; v.shape[2] = c
+   ```
+
+4. 规范形，将矩阵对象归一化处理，除以其范数。$ \frac{x}{\| x\|} $ 
+
+   求一个矩阵的范数：
+
+   ```python
+   x_norm=np.linalg.norm(x, ord=None, axis=None, keepdims=False)
+   ```
+
+   > https://blog.csdn.net/hqh131360239/article/details/79061535
+
+   - ord：
+
+     - 为向量时：
+
+       默认2范数，1为一范数，2为二范数，np.inf为无穷范数。
+
+     - 为矩阵时：
+
+       ord=1：列和的最大值
+
+       ord=2：|λE-ATA|=0，求特征值，然后求最大特征值得算术平方根
+
+       ord=∞：行和的最大值
+
+       ord=None：默认情况下，是求整体的矩阵元素平方和，再开根号。
+
+   - axis：处理类型：
+
+     axis=1表示按行向量处理，求多个行向量的范数
+
+     axis=0表示按列向量处理，求多个列向量的范数
+
+     axis=None表示矩阵范数。
+
+   - keepdims：是否保持矩阵的二维特性
+
+     True表示保持矩阵的二维特性，False相反
+
+5. np.sum也有类似上面的参数。
+
+6. 存在这样的简化, 对于 $x = [x_1, x_2, ..., x_n]$, 有`np.dot(x,x)` = $\sum_{j=0}^n x_j^{2}$. 
+
+   
