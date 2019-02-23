@@ -523,4 +523,86 @@ $$
 
 6. 存在这样的简化, 对于 $x = [x_1, x_2, ..., x_n]$, 有`np.dot(x,x)` = $\sum_{j=0}^n x_j^{2}$. 
 
-   
+## 编程作业
+
+包说明：
+
+- numpy：略
+- h5py：与H5交互的东西？
+- matplotlib：画曲线
+
+数据集说明：
+
+```
+train_set_x_orig, train_set_y, test_set_x_orig, test_set_y, classes = load_dataset()
+```
+
+已经训练的集合，train集合；
+
+test集合是将要搞的东西。
+
+数据集合：
+
+train_set_x_orig = [209个图像]
+
+图像 = (64,64,3)的np.array
+
+```
+Each image is of size: (64, 64, 3)
+train_set_x shape: (209, 64, 64, 3)
+train_set_y shape: (1, 209)
+test_set_x shape: (50, 64, 64, 3)
+test_set_y shape: (1, 50)
+```
+
+然后将其转换为:
+
+```
+train_set_x_flatten shape: (12288, 209)
+train_set_y shape: (1, 209)
+test_set_x_flatten shape: (12288, 50)
+test_set_y shape: (1, 50)
+sanity check after reshaping: [17 31 56 22 33]
+```
+
+然后进行归一化
+
+定义好sigmoid函数，初始化变量。
+
+
+
+诶诶诶，虽然按照他的提示给做完了，但还是不太懂为啥！
+
+代码层次
+
+- 计算sigmoid：
+
+- 初始化w，b
+
+- propagate：向前传播，也即是计算结果。
+
+  这里使用了矩阵加快及简化计算效率。
+
+- optimize：对w,b矩阵进行梯度下降法，以进行快速收敛
+
+  此处使用的是定步长的方式进行迭代。
+
+- predict：根据迭代出的w,b对结果进行预测
+
+  返回Y_prediction。
+
+![](1-jpg/LogReg_kiank.png)
+
+总体而言，这个还是一个简单、粗暴对大型矩阵求逆的过程，只是把求逆的过程，换成了梯度下降法。
+
+即是求：w,b    满足 aim：
+
+min   cost(A,Y)
+
+​	=cost(σ(w*X+b),Y)
+
+
+
+简单而粗暴。。。并且竟然还有点效果？！！0.0！
+
+**那么我在这里最大的问题就是，为什么！竟然有效果？概率点就那么夸张么？**
