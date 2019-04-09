@@ -250,3 +250,49 @@ dev sets:有时候也被称为交叉验证集。
 15. 1亿只猫
 
     两周训练时间是个限制、更好的电脑、可以少训练点，比如1kw
+
+#### Andrej采访
+
+ImageNet。
+
+关于人类基准的研究，可以很好地帮助研究的表现。
+
+教学并开放。AWSL，竟然是教学最新的知识，甚至就是昨天的新知识！
+
+> <https://www.youtube.com/watch?v=u6aEYuemt0M>
+>
+> 有个视频，16年的。
+>
+> <https://cs.stanford.edu/people/karpathy/>
+>
+> 有个博客
+>
+> <https://www.jianshu.com/p/182baeb82c71>
+>
+> 他的课程：
+>
+> CS231n课程：面向视觉识别的卷积神经网络
+>
+> <https://www.youtube.com/channel/UCPk8m_r6fkUSYmvgCBwq-sw>
+>
+> 这个是16年的课
+>
+> 他的youtub
+>
+> 这个课程有中文字幕诶！
+>
+> <http://cs231n.stanford.edu/>
+>
+> 官网
+>
+> <https://www.youtube.com/playlist?list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv>
+>
+> 这个是17年的课。
+>
+> 可以作为一个后续观看的对象使用。
+
+- 提到了神经卷积的特征提取能力。
+
+- 监督学习与无监督学习，监督学习很有效，但无监督学习却没啥进展。
+
+- OpenAI，他觉得，一开始把各个东西都拆分开来，然后一个个实现，实现以后再拼合到一起，并不一定是正确的做法。对于他个人而言，更倾向于实现的时候搞定这个。
