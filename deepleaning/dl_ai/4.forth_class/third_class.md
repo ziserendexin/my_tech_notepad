@@ -173,3 +173,77 @@ $$
 8. 1/9
 9. 5
 10. 19x19x5x20【】
+
+## 编程
+
+#### 编写一个过滤器。
+
+box_confidence（19x19,5,1）：对于这个每个盒子中存在对象的概率。
+
+boxes：（19x19,5,4）5个盒子的位置、长宽
+
+box_class_probs：每一类的检测概率
+
+1. 需要做的是，算出最大盒子分数、得到对应盒子得分。
+
+2. 使用阈值编码，过滤低概率
+
+3. 过滤掉不需要的子集
+
+   这里，使用
+
+   ```
+   tf.boolean_mask(
+       tensor,
+       mask,
+       name='boolean_mask',
+       axis=None
+   )
+   ```
+
+   将bool值应用到张量
+
+### 使用非最大抑制(NMS)
+
+#### 实现IoU
+
+1. 这里，使用左上与右下两个点定义长宽高
+2. 计算面积
+3. 计算交叉
+
+#### 实现NMS
+
+1. 选择最高分
+2. 计算重叠并删除重叠的框
+3. 返回1迭代
+
+使用
+
+> <https://www.tensorflow.org/api_docs/python/tf/gather>
+
+```
+tf.gather(
+    params,
+    indices,
+    validate_indices=None,
+    name=None,
+    axis=0
+)
+```
+
+> <https://www.tensorflow.org/api_docs/python/tf/image/non_max_suppression>
+
+```
+tf.image.non_max_suppression(
+    boxes,
+    scores,
+    max_output_size,
+    iou_threshold=0.5,
+    score_threshold=float('-inf'),
+    name=None
+)
+```
+
+感觉这里karas和tf混着来啊。
+
+<!--感觉开始有点看不太懂，这个编程了。Orz-->
