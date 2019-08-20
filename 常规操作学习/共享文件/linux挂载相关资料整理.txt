@@ -1,0 +1,19 @@
+挂载基础：
+http://linux.vbird.org/linux_basic/0230filesystem.php#harddisk-mount
+参考鸟哥的7.3.5 檔案系統掛載與卸載
+
+Linux挂Linux文件：(暂时用不上)
+http://linux.vbird.org/linux_server/0330nfs.php
+使用nfs系统比较简单。
+注意： 13.3.4 自動掛載 autofs 的使用
+
+Linux挂载win文件：
+http://linux.vbird.org/linux_server/0370samba.php
+win的共享方式为，cifs，因此需要转换下。
+简单的方式就是，win设置共享，Linux上，mount -cifs...即可。（见讓檔案在兩部主機之間直接修改： NFS 與 CIFS）
+
+另外一种方式为使用samba服务。（samba主要是为了解决Unix和win的共享）
+具体方式见网页，但具体操作较为麻烦。因此不选用
+
+
+
