@@ -1,5 +1,7 @@
 [TOC]
 
+> 本文阅读方式，下载一个Typora，然后打开。
+
 > 编程不要想着，啊，我全部看懂了再动手。
 > 因为你看不完，也不需要看懂(黑箱)。
 > just do it！边做边学。
@@ -9,7 +11,8 @@
 1. **谷歌**：....**面向谷歌编程**，真的不是说笑的。
 2. **Visual Studio Code**：一个好的编辑器。
 3. **Stackoverflow**：蹦出什么问题，去哪问。
-4. **Github**：如何发现
+4. **Github**：如何发现新的项目。
+5. **Jupyter**：一个好用的python工具。
 
 > 每个功能，我都说，这个为啥要这么做，为啥会让我爽。
 >
@@ -130,3 +133,27 @@ Github两个主要功能。一个是上传下载：git push、git clone。另外
 **点进去。**
 
 > 最近很多中文项目啦，帮大忙了。~~哈时候倒挂谷歌英翻中就好了~~。
+
+# Jupyter Notebook 朱庇特
+
+一个好用的python工具，可以以模块的方式进行运行，比较新人学习以及适合测试代码。
+
+同时VSCode的python插件，已经天生支持Jupyter，只需要按照提示，装好python插件以及对应得pip包即可。
+
+## 使用
+
+新建一个文件，修改后缀，以`.ipynb`结尾，然后使用VSCode打开，它会自动建立对应的模块。
+
+![](img/9.png)
+
+Jupyter Notebook有两种模块，默认是下面的那种代码块，代码块可以运行其中代码。
+
+另外一种是markdown块，主要用于记笔记。
+
+Jupyter Notebook也比较适合教学。
+
+> 知乎上一个回答。可以看看。
+>
+> https://zhuanlan.zhihu.com/p/85445777
+>
+> VS Code Python 全新发布！Jupyter Notebook 原生支持终于来了！
