@@ -1,0 +1,334 @@
+[alias]
+	sw = switch
+	ck = checkout
+	ckp = "!f(){ git checkout -b "personal/z30020541/$1"; }; f"
+	ckmp = "!f(){ git fetch origin master:master && git checkout -b personal/z30020541/$1 master; }; f"
+	st = status
+	co = !git checkout
+    ; camend: 只修改最近一次提交的提交信息（不改代码/文件）
+    ; 用法示例：git camend "fix: 修正文案"
+    camend = "!git commit --amend -m"
+
+    ; amend: 把当前所有修改 add 进来，合并到最近一次提交，保持原提交信息不变，只更新内容和时间
+    ; 用法示例：git amend
+    amend = !git add -A && git commit --amend --no-edit --date=now
+
+    ; amendpf: 和 amend 一样，但自动强推当前分支到远程
+    ; 用法示例：git amendpf
+    ; 注意：会覆盖远程当前分支上最后一次提交（危险操作）
+    amendpf = !git add -A && git commit --amend --no-edit --date=now && git push -f origin $(git rev-parse --abbrev-ref HEAD)
+
+    ; p: 推送当前分支到 origin，等价于 git push origin 当前分支
+    ; 用法示例：git p
+    p = !git push origin $(git rev-parse --abbrev-ref HEAD)
+
+    ; c: 提交所有当前修改，带提交信息
+    ; 用法示例：git c "feat: 新增用户列表"
+    c = "!git add -A && git commit -m "
+
+    ; pf: 强推当前分支到远程（危险：可能覆盖别人提交）
+    ; 用法示例：git pf
+    pf = !git push -f origin $(git rev-parse --abbrev-ref HEAD)
+
+    ; rbm: 先从远程拉取，再把当前分支 rebase 到最新 origin/master 上
+    ; 用法示例：在功能分支上执行 git rbm，保持基于最新 master
+    rbm = !git fetch && git rebase origin/master
+
+    ; bdel: 删除所有本地分支，只保留 master
+    ; 用法示例：git bdel
+    ; 注意：会直接删掉所有非 master 的本地分支，请确保都已合并或不再需要
+    bdel = "!git branch | grep -v \"master\" | xargs -r git branch -D"
+
+    ; cpn: 从指定分支上 cherry-pick 最近 N 个提交到当前分支，按时间正序
+    ; 用法示例：git cpn feature/login 3   # 把 feature/login 最近 3 个提交应用到当前分支
+    cpn = "!f() { git log -n $2 --pretty=format:\"%H\" --reverse $1 | xargs git cherry-pick; }; f"
+
+    ; fpull: 强制把当前分支重置到远程同名分支（丢弃本地未推的提交 / 修改）
+    ; 用法示例：git fpull
+    ; 注意：当前分支会被 reset --hard 到 origin/当前分支
+    fpull = "!git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)"
+    ; devcpn: 把当前分支最近 N 个提交（按时间正序）cherry-pick 到 develop，然后强推 develop
+    ; 用法示例：git devcpn 2
+    ; 流程：当前分支 N commit → 切 develop → cherry-pick 这些 commit → git push -f origin develop → 切回原分支
+    ; 注意：会强制推送 develop，覆盖远程 develop 历史
+	devcpn = "!f() { \
+		current_branch=$(git branch --show-current); \
+		commit_count=${1:-1}; \
+		echo \"当前分支: $current_branch\"; \
+		echo \"准备操作 $commit_count 个提交\"; \
+		\
+		echo \"步骤1: 获取当前分支最近 $commit_count 个提交\"; \
+		commits=$(git log -n $commit_count --pretty=format:\"%H\" --reverse); \
+		\
+		echo \"步骤2: 切换到 develop 分支\"; \
+		git checkout develop || { echo \"切换到develop分支失败\"; return 1; }; \
+		\
+		echo \"步骤3: cherry-pick 当前分支的提交到 develop\"; \
+		echo \"$commits\" | xargs -I {} git cherry-pick {}; \
+		\
+		echo \"步骤4: 强制推送 develop 分支\"; \
+		git push -f origin develop; \
+		\
+		echo \"步骤5: 切回原分支 $current_branch\"; \
+		git checkout \"$current_branch\"; \
+		\
+		echo \"操作完成！\"; \
+	}; f"
+	; replacedevcpn: 用当前分支最近 N 个提交的“内容”替换 develop 最近 N 个提交中“提交消息相同”的提交
+    ; 对比方式：按顺序取当前分支 N 条 + develop N 条，逐对比提交信息，若相等：
+    ;   - develop 做 git reset --hard HEAD~1
+    ;   - 再 cherry-pick 当前分支对应的提交（内容更新，但保留同一条消息）
+    ; 用法示例：git replacedevcpn 3
+    ; 注意：
+    ;   - 只按消息一一对应比对，前后顺序不一致会导致“不匹配就跳过”
+    ;   - 会多次 reset --hard HEAD~1，适合你已经清楚 develop 最近 N 个 commit 是什么情况
+	replacedevcpn = "!f() { \
+		current_branch=$(git branch --show-current); \
+		commit_count=${1:-1}; \
+		echo \"当前分支: $current_branch\"; \
+		echo \"准备替换 $commit_count 个提交的内容\"; \
+		\
+		echo \"步骤1: 获取当前分支最近 $commit_count 个提交信息\"; \
+		current_commits=$(git log -n $commit_count --pretty=format:\"%H %s\" --reverse); \
+		\
+		echo \"步骤2: 切换到 develop 分支\"; \
+		git checkout develop || { echo \"切换到develop分支失败\"; return 1; }; \
+		\
+		echo \"步骤3: 获取 develop 分支最近 $commit_count 个提交\"; \
+		develop_commits=$(git log -n $commit_count --pretty=format:\"%H %s\" --reverse); \
+		\
+		echo \"步骤4: 比较并替换相同的提交\"; \
+		while IFS= read -r current_line && IFS= read -r develop_line <&3; do \
+			current_hash=$(echo \"$current_line\" | cut -d' ' -f1); \
+			current_msg=$(echo \"$current_line\" | cut -d' ' -f2-); \
+			develop_hash=$(echo \"$develop_line\" | cut -d' ' -f1); \
+			develop_msg=$(echo \"$develop_line\" | cut -d' ' -f2-); \
+			\
+			echo \"比较提交: '$current_msg' vs '$develop_msg'\"; \
+			\
+			if [ \"$current_msg\" = \"$develop_msg\" ]; then \
+				echo \"发现相同提交消息，准备替换内容...\"; \
+				git reset --hard HEAD~1; \
+				git cherry-pick $current_hash || { \
+					echo \"Cherry-pick 失败，请手动解决冲突\"; \
+					git cherry-pick --abort; \
+					git reset --hard $develop_hash; \
+					echo \"已回滚到原状态\"; \
+					git checkout \"$current_branch\"; \
+					return 1; \
+				}; \
+			else \
+				echo \"提交消息不匹配，跳过替换\"; \
+			fi; \
+		done <<< \"$current_commits\" 3<<< \"$develop_commits\"; \
+		\
+		echo \"步骤5: 推送 develop 分支\"; \
+		read -p \"是否推送到远程？(y/N): \" push_confirm; \
+		if [ \"$push_confirm\" = \"y\" ] || [ \"$push_confirm\" = \"Y\" ]; then \
+			git push -f origin develop; \
+		fi; \
+		\
+		echo \"步骤6: 切回原分支 $current_branch\"; \
+		git checkout \"$current_branch\"; \
+		\
+		echo \"操作完成！\"; \
+	}; f"
+    ; resetdev: 把本地 develop 分支从最新 master 重新创建一份
+    ; 流程：
+    ;   1) 切 master，并从远程拉最新 master
+    ;   2) 删除本地 develop 分支
+    ;   3) 删除本地对 origin/develop 的远程跟踪引用（不是真正删远程分支）
+    ;   4) 从当前 master 新建 develop
+    ;   5) 若当前原分支不是 master/develop，则切回原分支
+    ; 用法示例：git resetdev
+    ; 注意：不会直接删除远程 develop，只是本地重新拉一条干净的 develop
+	resetdev = "!f() { \
+		current_branch=$(git branch --show-current); \
+		echo \"当前分支: $current_branch\"; \
+		\
+		echo \"步骤1: 切换到 master 分支\"; \
+		git checkout master || { echo \"切换到master分支失败\"; return 1; }; \
+		\
+		echo \"步骤2: 拉取最新的 master 分支\"; \
+		git pull origin master; \
+		\
+		echo \"步骤3: 删除本地 develop 分支\"; \
+		git branch -D develop 2>/dev/null || echo \"本地develop分支不存在或已删除\"; \
+		\
+		echo \"步骤4: 删除远程跟踪的 develop 分支引用\"; \
+		git branch -dr origin/develop 2>/dev/null || echo \"远程develop分支引用不存在\"; \
+		\
+		echo \"步骤5: 从 master 创建新的 develop 分支\"; \
+		git checkout -b develop; \
+		\
+		if [ \"$current_branch\" != \"develop\" ] && [ \"$current_branch\" != \"master\" ]; then \
+			echo \"步骤7: 切回原分支 $current_branch\"; \
+			git checkout \"$current_branch\" || echo \"切回原分支失败，当前在develop分支\"; \
+		fi; \
+		\
+		echo \"develop 分支重置完成！\"; \
+	}; f"
+	# 用法：
+	#   git sq2dev 3 "用户管理模块提测 v2"
+	#   git sq2dev 5                # 消息默认用当前分支最后一次提交说明
+	#
+	# 行为简述：
+	#   - 当前分支最近 N 个 commit → 在临时分支上 squash 成 1 个提交（不改当前分支历史）
+	#   - 切到 develop，在最近 30 个提交里按“提交消息完全相等”查找：
+	#       * 0 个同名：直接 cherry-pick 新 squash 到 develop
+	#       * 1 个同名：二次确认后，用新 squash 替换该提交，并重放之后的提交（需要强推）
+	#       * >1 个同名：直接报错退出，不做任何修改
+	sq2dev = "!f() { \
+		count=${1:-1}; \
+		shift || true; \
+		msg=\"$*\"; \
+		current_branch=$(git branch --show-current); \
+		if [ -z \"$current_branch\" ]; then \
+			echo \"当前不在任何本地分支上，终止\"; return 1; \
+		fi; \
+		if ! echo \"$count\" | grep -Eq '^[0-9]+$'; then \
+			echo \"第一个参数必须是数字（要 squash 的 commit 数）\"; return 1; \
+		fi; \
+		total_commits=$(git rev-list --count HEAD); \
+		if [ \"$count\" -gt \"$total_commits\" ]; then \
+			echo \"当前分支提交数只有 $total_commits，小于要 squash 的 $count 个\"; \
+			return 1; \
+		fi; \
+		if [ -z \"$msg\" ]; then \
+			msg=$(git log -n 1 --pretty=format:\"%s\"); \
+		fi; \
+		echo \"当前分支: $current_branch\"; \
+		echo \"准备将最近 $count 个提交 squash 后应用到 develop\"; \
+		echo \"squash 提交消息: $msg\"; \
+		tmp_branch=\"__sq2dev_tmp_$$\"; \
+		echo \"创建临时分支: $tmp_branch\"; \
+		git branch \"$tmp_branch\" || { echo \"创建临时分支失败\"; return 1; }; \
+		git checkout \"$tmp_branch\" || { echo \"切换到临时分支失败\"; git branch -D \"$tmp_branch\"; return 1; }; \
+		echo \"在临时分支上执行 soft reset，合并最近 $count 个提交\"; \
+		git reset --soft HEAD~\"$count\" || { \
+			echo \"reset 失败\"; \
+			git checkout \"$current_branch\"; \
+			git branch -D \"$tmp_branch\"; \
+			return 1; \
+		}; \
+		git commit -m \"$msg\" || { \
+			echo \"没有可提交的变更\"; \
+			git checkout \"$current_branch\"; \
+			git branch -D \"$tmp_branch\"; \
+			return 1; \
+		}; \
+		sq_hash=$(git rev-parse HEAD); \
+		echo \"生成 squash 提交: $sq_hash\"; \
+		echo \"切换到 develop 分支\"; \
+		git checkout develop || { \
+			echo \"切换到 develop 失败\"; \
+			git checkout \"$current_branch\"; \
+			git branch -D \"$tmp_branch\"; \
+			return 1; \
+		}; \
+		search_limit=30; \
+		echo \"在 develop 最近 $search_limit 个提交中查找同名提交...\"; \
+		develop_logs=$(git log -n $search_limit --pretty=format:\"%H %s\"); \
+		match_hash=\"\"; \
+		multiple=0; \
+		while IFS= read -r line; do \
+			[ -z \"$line\" ] && continue; \
+			h=$(echo \"$line\" | cut -d' ' -f1); \
+			s=$(echo \"$line\" | cut -d' ' -f2-); \
+			if [ \"$s\" = \"$msg\" ]; then \
+				if [ -n \"$match_hash\" ]; then \
+					multiple=1; \
+					break; \
+				fi; \
+				match_hash=\"$h\"; \
+			fi; \
+		done <<< \"$develop_logs\"; \
+		if [ \"$multiple\" -eq 1 ]; then \
+			echo \"develop 上存在多个同名提交，自动处理风险太大，已终止，请手动处理。\"; \
+			git checkout \"$current_branch\"; \
+			git branch -D \"$tmp_branch\"; \
+			return 1; \
+		fi; \
+		if [ -z \"$match_hash\" ]; then \
+			echo \"develop 上未找到同名提交，直接追加新的 squash 提交\"; \
+			git cherry-pick \"$sq_hash\" || { \
+				echo \"cherry-pick 失败，请手动解决冲突\"; \
+				git cherry-pick --abort; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				return 1; \
+			}; \
+		else \
+			echo \"在 develop 上找到同名提交：\"; \
+			git show -s --oneline \"$match_hash\"; \
+			echo \"将用新的 squash 提交替换该提交，并重写之后的历史（需要强制推送）。确认继续？(y/N):\"; \
+			read ans; \
+			if [ \"$ans\" != \"y\" ] && [ \"$ans\" != \"Y\" ]; then \
+				echo \"用户取消操作\"; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				return 0; \
+			fi; \
+			base_parent=$(git rev-parse \"$match_hash^\" 2>/dev/null); \
+			if [ -z \"$base_parent\" ]; then \
+				echo \"无法获取目标提交的父提交，终止\"; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				return 1; \
+			fi; \
+			rewrite_branch=\"__dev_rewrite_$$\"; \
+			echo \"从父提交 $base_parent 创建重写分支 $rewrite_branch\"; \
+			git branch \"$rewrite_branch\" \"$base_parent\" || { \
+				echo \"创建重写分支失败\"; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				return 1; \
+			}; \
+			git checkout \"$rewrite_branch\" || { \
+				echo \"切换到重写分支失败\"; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				git branch -D \"$rewrite_branch\" 2>/dev/null; \
+				return 1; \
+			}; \
+			echo \"先 cherry-pick 新的 squash 提交\"; \
+			git cherry-pick \"$sq_hash\" || { \
+				echo \"cherry-pick 新 squash 失败\"; \
+				git cherry-pick --abort; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				git branch -D \"$rewrite_branch\" 2>/dev/null; \
+				return 1; \
+			}; \
+			echo \"再重放被替换提交之后的提交\"; \
+			tail_range=\"$match_hash..develop\"; \
+			git cherry-pick $tail_range || { \
+				echo \"重放后续提交失败\"; \
+				git cherry-pick --abort; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				git branch -D \"$rewrite_branch\" 2>/dev/null; \
+				return 1; \
+			}; \
+			echo \"用重写分支覆盖 develop\"; \
+			git branch -f develop \"$rewrite_branch\" || { \
+				echo \"覆盖 develop 失败\"; \
+				git checkout \"$current_branch\"; \
+				git branch -D \"$tmp_branch\"; \
+				git branch -D \"$rewrite_branch\" 2>/dev/null; \
+				return 1; \
+			}; \
+			git checkout develop; \
+			git branch -D \"$rewrite_branch\" >/dev/null 2>&1 || true; \
+		fi; \
+		echo \"是否 push develop 到远程（可能需要 -f）？(y/N):\"; \
+		read push_ans; \
+		if [ \"$push_ans\" = \"y\" ] || [ \"$push_ans\" = \"Y\" ]; then \
+			git push -f origin develop || echo \"push 失败，请检查\"; \
+		fi; \
+		echo \"切回原分支: $current_branch\"; \
+		git checkout \"$current_branch\"; \
+		echo \"删除临时分支 $tmp_branch\"; \
+		git branch -D \"$tmp_branch\" >/dev/null 2>&1 || true; \
+		echo \"sq2dev 完成\"; \
+	}; f"
